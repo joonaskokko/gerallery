@@ -1,0 +1,57 @@
+@import url("reset.css");
+
+body {
+	background-color: #1B1B1B;
+	font-family: "Helvetica Neue", "Helvetica", sans-serif;
+	font-size: 14px;
+	color: black;
+}
+
+a { color: black; text-decoration: none;}
+
+.image {
+	float: left;
+	display: block;
+	margin: 2px;
+}
+
+nav {
+	clear: both;
+	background-color: #EAEAEA;
+	overflow: hidden;
+}
+
+nav ul {
+	float: left;
+}
+
+nav .folder {
+	float: left;
+}
+
+nav .folder a {
+	display: block;
+	padding: 10px;
+	border-bottom: 1px solid #BEBEBE;
+	border-right: 1px solid #BEBEBE;
+}
+
+nav .folder.up {
+	background-color: black;
+}
+
+nav .folder.up a {
+	color: white;
+	border-bottom: 1px solid black;
+	border-right: 1px solid black;
+}
+
+nav .image-count {
+	padding: 10px;
+	float: right;
+	color: dimgray;
+}
+
+article {
+	width: 100%;
+}
