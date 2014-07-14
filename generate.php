@@ -42,6 +42,12 @@ function generateGallery($private_folder, $recursive = FALSE, $force = FALSE) {
 		}
 		
 		foreach ($image_files as $image_file) {
+			// Check first if we even need to process this image.
+			if (file_exists(GALLERY_PATH . "/" . THUMBNAIL_FOLDER . "/" . $public_folder . "/" . end(explode("/", $image_file))) && !$force) {
+				l("Thumbnail already exists, skipping.");
+				continue;
+			}
+
 			$image = new Imagick($image_file);
 			
 			if (!$image) {
@@ -71,12 +77,7 @@ function generateGallery($private_folder, $recursive = FALSE, $force = FALSE) {
 
 			$image->thumbnailImage(0, THUMBNAIL_HEIGHT);
 			l("Processing image '" . $image->getImageFilename() . "'.");
-			
-			if (file_exists(GALLERY_PATH . "/" . THUMBNAIL_FOLDER . "/" . $public_folder . "/" . $image_filename) && !$force) {
-				l("Thumbnail already exists, skipping.");
-				continue;
-			}
-			
+						
 			$image->writeImage(GALLERY_PATH . "/" . THUMBNAIL_FOLDER . "/" . $public_folder . "/" . $image_filename);
 			
 			$thumbnails_generated++;
