@@ -6,6 +6,7 @@ require("settings.php");
 $param = FALSE;
 
 if (!empty($_SERVER['argv']) && !empty($_SERVER['argv'][1])) {
+	l("Forcing generation.");
 	$force = $_SERVER['argv'][1];
 }
 
