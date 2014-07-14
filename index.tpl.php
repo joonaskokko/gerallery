@@ -1,3 +1,4 @@
+<?php PHP_SAPI == 'cli' or die() ?>
 <!DOCTYPE html>
 	<head>
 			<title>index of <?php echo $_public_folder;?></title>

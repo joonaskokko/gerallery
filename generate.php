@@ -1,4 +1,5 @@
-<?php
+<?php PHP_SAPI == 'cli' or die();
+
 require("settings.php");
 @mkdir(THUMBNAIL_FOLDER);
 
@@ -14,6 +15,7 @@ function generateGallery($private_folder, $recursive = FALSE, $force = FALSE) {
 	// Get public folder.
 	$public_folder = getPublicPath($private_folder);
 	$subfolders = NULL;
+	$thumbnails_generated = 0;
 	
 	// Variables for the template.
 	$_images = array();
@@ -70,7 +72,14 @@ function generateGallery($private_folder, $recursive = FALSE, $force = FALSE) {
 			$image->thumbnailImage(0, THUMBNAIL_HEIGHT);
 			l("Processing image '" . $image->getImageFilename() . "'.");
 			
+			if (file_exists(GALLERY_PATH . "/" . THUMBNAIL_FOLDER . "/" . $public_folder . "/" . $image_filename) && !$force) {
+				l("Thumbnail already exists, skipping.");
+				continue;
+			}
+			
 			$image->writeImage(GALLERY_PATH . "/" . THUMBNAIL_FOLDER . "/" . $public_folder . "/" . $image_filename);
+			
+			$thumbnails_generated++;
 			
 			$thumbnail_geometry = $image->getImageGeometry();
 			$thumbnail_width = $image->getImageWidth();
@@ -88,6 +97,8 @@ function generateGallery($private_folder, $recursive = FALSE, $force = FALSE) {
 				'thumb_height' => $thumbnail_height,
 			);
 		}
+		
+		l("Generated " . $thumbnails_generated . " thumbnails.");
 	}
 	else {
 		l("No images in " . $private_folder . ".");
@@ -102,19 +113,26 @@ function generateGallery($private_folder, $recursive = FALSE, $force = FALSE) {
 		}
 	}
 	
-	// Generate HTML.
-	ob_start();
-	require("index.tpl.php");
-	$html = ob_get_contents();
-	ob_end_clean();
-	
 	l("Processing HTML index file 'index.html'.");
-	file_put_contents($private_folder . "/" . "index.html", $html);
+	
+	// Only generate the index if the file doesn't exist or we have generated some thumbnails or the force flag is on.
+	if (!file_exists($private_folder . "/" . "index.html") || $thumbnails_generated || $force) {
+		// Generate HTML.
+		ob_start();
+		require("index.tpl.php");
+		$html = ob_get_contents();
+		ob_end_clean();
+
+		file_put_contents($private_folder . "/" . "index.html", $html);
+	}
+	else {
+		l("Skipping HTML index generation, no changes required.");
+	}
 	
 	if ($subfolders) {
 		l("Found subfolders in '" . $private_folder . "'.");
 		foreach ($subfolders as $subfolder) {
-			generateGallery($subfolder, TRUE);
+			generateGallery($subfolder, TRUE, $force);
 		}
 	}
 	else {
