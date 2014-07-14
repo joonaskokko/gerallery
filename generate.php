@@ -3,7 +3,7 @@
 require("settings.php");
 @mkdir(THUMBNAIL_FOLDER);
 
-$param = FALSE;
+$force = FALSE;
 
 if (!empty($_SERVER['argv']) && !empty($_SERVER['argv'][1])) {
 	l("Forcing generation.");
