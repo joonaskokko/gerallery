@@ -10,7 +10,7 @@ if (!empty($_SERVER['argv']) && !empty($_SERVER['argv'][1])) {
 	$force = $_SERVER['argv'][1];
 }
 
-generateGallery(GALLERY_PATH, TRUE);
+generateGallery(GALLERY_PATH, TRUE, $force);
 
 function generateGallery($private_folder, $recursive = FALSE, $force = FALSE) {
 	// Get public folder.
