@@ -55,6 +55,7 @@ if (!empty($_SERVER['argv']) && count($_SERVER['argv'] > 1)) {
 				echo "gerallery generation script\n";
 				echo "--force|-f, --no-recursion, --help|-h\n";
 				die();
+			break;
 		}
 	}
 }
