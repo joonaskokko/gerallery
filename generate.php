@@ -1,5 +1,8 @@
 <?php PHP_SAPI == 'cli' or die();
 
+// Script time.
+$start = microtime(TRUE);
+
 //*** Basic setting up ***//
 
 // Require settings file.
@@ -58,6 +61,12 @@ if (!empty($_SERVER['argv']) && count($_SERVER['argv'] > 1)) {
 
 // Here we go!
 generateGallery(GALLERY_PATH, $recursive, $force);
+
+// Get end time.
+$end = microtime(TRUE);
+
+l("Gallery generation took " . round($end - $start) . " seconds.");
+l("Bye.");
 
 //*** Functions ***//
 
