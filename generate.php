@@ -6,7 +6,7 @@ require("settings.php");
 $param = FALSE;
 
 if (!empty($_SERVER['argv']) && !empty($_SERVER['argv'][1])) {
-	$param = $_SERVER['argv'][1];
+	$force = $_SERVER['argv'][1];
 }
 
 generateGallery(GALLERY_PATH, TRUE);
