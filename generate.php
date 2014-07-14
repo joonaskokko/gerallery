@@ -190,7 +190,7 @@ function generateGallery($private_folder, $recursive = FALSE, $force = FALSE) {
 	if (!file_exists($private_folder . "/" . "index.html") || $thumbnails_generated || $force) {
 		// Generate HTML.
 		ob_start();
-		require(THEMES . "/" . THEME_FOLDER . "/" . "index.tpl.php");
+		require("themes" . "/" . THEME_FOLDER . "/" . "index.tpl.php");
 		$html = ob_get_contents();
 		ob_end_clean();
 
