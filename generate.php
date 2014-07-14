@@ -1,24 +1,84 @@
 <?php PHP_SAPI == 'cli' or die();
 
-require("settings.php");
-@mkdir(THUMBNAIL_FOLDER);
+//*** Basic setting up ***//
 
-$force = FALSE;
-
-if (!empty($_SERVER['argv']) && !empty($_SERVER['argv'][1])) {
-	l("Forcing generation.");
-	$force = $_SERVER['argv'][1];
+// Require settings file.
+if (!file_exists("settings.php")) {
+	l("FATAL: file 'settings.php' not found.");
+	die();
 }
 
-generateGallery(GALLERY_PATH, TRUE, $force);
+require_once("settings.php");
+
+// Require ImageMagick PHP libraries.
+if (!class_exists("Imagick")) {
+	l("FATAL: You need to install PHP ImageMacick support.");
+	die();
+}
+
+// Create the thumbnail root folder, no matter what.
+if (!is_dir(THUMBNAIL_FOLDER)) {
+	if (!mkdir(THUMBNAIL_FOLDER)) {
+		l("FATAL: couldn't create thumbnail root directory to '" . THUMBNAIL_FOLDER . "'.");
+		die();
+	}
+}
+
+
+//*** Gather parameters and run gerallery ***//
+
+// Force flag. Default is false.
+$force = FALSE;
+
+// Recursive flag. Default is true.
+$recursive = TRUE;
+
+// Get params.
+if (!empty($_SERVER['argv']) && count($_SERVER['argv'] > 1)) {
+	// Unset the first since it's the script name.
+	unset($_SERVER['argv'][0]);
+	
+	foreach ($_SERVER['argv'] as $argument) {
+		switch ($argument) {
+			case "--force":
+			case "-f":
+				$force = TRUE;
+			break;
+			case "--no-recursion";
+				$recursive = FALSE;
+			break;
+			case "--help":
+			case "-h":
+				echo "gerallery generation script\n";
+				echo "--force|-f, --no-recursion, --help|-h\n";
+				die();
+		}
+	}
+}
+
+// Here we go!
+generateGallery(GALLERY_PATH, $recursive, $force);
+
+//*** Functions ***//
+
+/**
+ * Generates the actual gallery. A recursive function that is called for each subfolder in the gallery path if recursive flag is on.
+ * @param String $private_folder The folder on the file system which consists of image files.
+ * @param Boolean $recursive If we also want to generate galleries for subfolders.
+ * @param Boolean $force Force gallery generation regardless if the image and the index files are already present. Useful when replacing images with the same name or removing them.
+ */
 
 function generateGallery($private_folder, $recursive = FALSE, $force = FALSE) {
-	// Get public folder.
+	// Get public folder. Public folder is the folder that is shown to the Internets.
 	$public_folder = getPublicPath($private_folder);
+	
+	// Subfolders.
 	$subfolders = NULL;
+	
+	// Amount of thumbnails generated this run. For internal use and user convinience.
 	$thumbnails_generated = 0;
 	
-	// Variables for the template.
+	// Variables for the template. All of them are prefixed with _ and are not read in this file at all.
 	$_images = array();
 	$_links = array();
 	$_public_folder = $public_folder;
@@ -34,14 +94,20 @@ function generateGallery($private_folder, $recursive = FALSE, $force = FALSE) {
 	
 	$image_files = glob($private_folder . "/{*.jpg,*.JPG,*.png,*.PNG}", GLOB_BRACE);
 	
-	// Only proceed with image processing if we have images.
+	// Only proceed with image processing if we have images to process.
 	if ($image_files) {
-		// Generate the thumbnail directory if it doesn't exist.
+		// Generate the thumbnail subfolder if it doesn't exist.
 		if ($private_folder && !file_exists(GALLERY_PATH . "/" . THUMBNAIL_FOLDER . "/" . $public_folder)) {
 			l("Generating thumbnail folder '" . GALLERY_PATH . "/" . THUMBNAIL_FOLDER . "/" . $public_folder . "'.");
-			mkdir(GALLERY_PATH . "/" . THUMBNAIL_FOLDER . "/" . $public_folder, 0755, TRUE);
+			
+			// Also add permissions.
+			if (!mkdir(GALLERY_PATH . "/" . THUMBNAIL_FOLDER . "/" . $public_folder, 0755, TRUE)) {
+				l("FATAL: can't create thumbnail subfolder for '" . GALLERY_PATH . "/" . THUMBNAIL_FOLDER . "/" . $public_folder . "'.");
+				die();
+			}
 		}
 		
+		// Loop images.
 		foreach ($image_files as $image_file) {
 			// Check first if we even need to process this image.
 			if (file_exists(GALLERY_PATH . "/" . THUMBNAIL_FOLDER . "/" . $public_folder . "/" . end(explode("/", $image_file))) && !$force) {
@@ -49,6 +115,7 @@ function generateGallery($private_folder, $recursive = FALSE, $force = FALSE) {
 				continue;
 			}
 
+			// Create ImageMagick object.
 			$image = new Imagick($image_file);
 			
 			if (!$image) {
@@ -62,6 +129,7 @@ function generateGallery($private_folder, $recursive = FALSE, $force = FALSE) {
 			$width = $geometry['width'];
 			$height = $geometry['height'];
 
+			// Copied from PHP.net.
 			switch($orientation) {
 				case imagick::ORIENTATION_BOTTOMRIGHT:
 					$image->rotateimage("#000", 180); // rotate 180 degrees
@@ -87,7 +155,8 @@ function generateGallery($private_folder, $recursive = FALSE, $force = FALSE) {
 			$thumbnail_width = $image->getImageWidth();
 			$thumbnail_height = $image->getImageHeight();
 			
-			chmod(GALLERY_PATH . "/" . THUMBNAIL_FOLDER . "/" . $public_folder . "/" . $image_filename, 0644);
+			// Adjust file rights.
+			@chmod(GALLERY_PATH . "/" . THUMBNAIL_FOLDER . "/" . $public_folder . "/" . $image_filename, 0644);
 			
 			// Add to template variable.
 			$_images[] = array(
@@ -121,7 +190,7 @@ function generateGallery($private_folder, $recursive = FALSE, $force = FALSE) {
 	if (!file_exists($private_folder . "/" . "index.html") || $thumbnails_generated || $force) {
 		// Generate HTML.
 		ob_start();
-		require("index.tpl.php");
+		require(THEMES . "/" . THEME_FOLDER . "/" . "index.tpl.php");
 		$html = ob_get_contents();
 		ob_end_clean();
 
@@ -134,7 +203,7 @@ function generateGallery($private_folder, $recursive = FALSE, $force = FALSE) {
 	if ($subfolders) {
 		l("Found subfolders in '" . $private_folder . "'.");
 		foreach ($subfolders as $subfolder) {
-			generateGallery($subfolder, TRUE, $force);
+			generateGallery($subfolder, $recursive, $force);
 		}
 	}
 	else {
@@ -152,6 +221,12 @@ function getPublicPath($path) {
 		return $path;
 	}
 }
+
+
+/**
+ * Simple output function.
+ * @param String $thing The thing that is being logged. Usually the message but can be an array.
+ */
 
 function l($thing) {
 	echo date("c") . ": ";

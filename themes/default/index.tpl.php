@@ -5,7 +5,7 @@
 			<meta name="robots" content="ALL" />
 			<meta content='width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=0;' name='viewport' />
 			<meta http-equiv="last-modified" content="<?php echo date('r')?>" />
-			<link href="<?php echo STATIC_BASE_URL . "/css/gallery.css"?>" rel="stylesheet" type="text/css" />
+			<link href="<?php echo STATIC_BASE_URL . "/themes/" . THEME_FOLDER . "/css/gallery.css"?>" rel="stylesheet" type="text/css" />
 	</head>
 	<body>
 		<nav>
