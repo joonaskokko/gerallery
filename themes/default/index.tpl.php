@@ -9,7 +9,6 @@
 	</head>
 	<body>
 		<header>
-			<h1><?= $_public_folder;?></h1>
 			<nav>
 				<ul>
 					<li class="folder up">
@@ -28,6 +27,7 @@
 		</header>
 		<?php if (!empty($_images)):?>
 		<article>
+			<h1><?= $_public_folder;?></h1>
 		<?php foreach ($_images as $_image):?>
 			<a href="<?= $_image['full_url'];?>" class="image">
 				<img src="<?= $_image['thumbnail_url'];?>" alt="" width="<?= $_image['thumb_width']?>" height="<?= $_image['thumb_height']?>"/>
