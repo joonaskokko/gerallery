@@ -93,6 +93,11 @@ function generateGallery($private_folder, $recursive = FALSE, $force = FALSE) {
 	$_links = array();
 	$_public_folder = $public_folder;
 	
+	// For empty folder name.
+	if (empty($_public_folder)) {
+		$_public_folder = "index";
+	}
+	
 	// First find out subfolders if the recursive mode is on.  This is because not every folder might have images but their subfolders do.
 	if ($recursive) {
 		// Subfolders
@@ -102,7 +107,7 @@ function generateGallery($private_folder, $recursive = FALSE, $force = FALSE) {
 	// Now on with the images.
 	l("Checking folder '" . $private_folder . "' for images.");
 	
-	$image_files = glob($private_folder . "/{*.jpg,*.JPG,*.png,*.PNG}", GLOB_BRACE);
+	$image_files = glob($private_folder . "/{*.jpg,*.JPG,*.jpeg,*.JPEG,*.png,*.PNG,*.gif,*.GIF}", GLOB_BRACE);
 	
 	// Only proceed with image processing if we have images to process.
 	if ($image_files) {
