@@ -22,10 +22,10 @@ nav {
 
 nav ul {
 	display: flex;
-	flex-wrap: flex;
+	flex-wrap: wrap;
+	-webkit-flex-wrap: wrap;
 	flex-flow: row-wrap;
 	-wbkit-flex-flow: row-wrap;
-	-webkit-flex-wrap: flex;
 }
 
 nav .folder {
