@@ -12,14 +12,20 @@ h1 { display: none; }
 a { color: black; text-decoration: none;}
 
 .image {
-	float: left;
 	display: block;
+	flex-grow: 1;
+	-webkit-flex-grow: 1;
 	margin: 2px;
 }
 
-header {
+nav {
 	background-color: #EAEAEA;
-	overflow: hidden;
+}
+
+nav ul {
+	display: flex;
+	flex-wrap: flex;
+	-webkit-flex-wrap: flex;
 }
 
 nav .folder {
@@ -34,21 +40,24 @@ nav .folder a {
 }
 
 nav .folder.up {
-	background-color: black;
+	background-color: #232323;
 }
 
 nav .folder.up a {
 	color: white;
-	border-bottom: 1px solid black;
-	border-right: 1px solid black;
+	border-bottom: 1px solid #232323;
+	border-right: 1px solid #232323;
 }
 
 header .image-count {
 	padding: 10px;
-	float: right;
-	color: dimgray;
+	font-size: 22px;
+	color: #C2C2C2;
 }
 
 article {
 	width: 100%;
+	display: flex;
+	flex-wrap: wrap;
+	-webkit-flex-wrap: wrap;
 }
