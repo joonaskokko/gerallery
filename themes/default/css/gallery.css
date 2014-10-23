@@ -23,6 +23,8 @@ nav {
 nav ul {
 	display: flex;
 	flex-wrap: flex;
+	flex-flow: row-wrap;
+	-wbkit-flex-flow: row-wrap;
 	-webkit-flex-wrap: flex;
 }
 
