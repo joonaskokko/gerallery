@@ -40,6 +40,8 @@ nav .folder a {
 
 nav .folder.up {
 	background-color: #232323;
+	flex-grow: 0;
+	-webkit-flex-grow: 0;
 }
 
 nav .folder.up a {
